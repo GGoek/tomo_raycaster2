@@ -53,9 +53,6 @@
 
                     me._needRedraw = false;
                 }
-                
-                // me._core._controls.update();
-                // me._needRedraw = true;
 
             };
 
@@ -64,18 +61,22 @@
         };
 
         me.setSlicemapsImages = function(images, imagesPaths) {
-            var ctx = me._core._renderer.getContext()
-            var maxTexSize = ctx.getParameter(ctx.MAX_TEXTURE_SIZE);
+            var maxTexSize = me._core.getMaxTextureSize();
+            var maxTexturesNumber = me._core.getMaxTexturesNumber();
 
             var firstImage = images[0];
+            var imagesNumber = images.length;
 
-            if(Math.max(firstImage.width, firstImage.height) > maxTexSize) {
-                throw Error("Size of slice bigger than maximum possible on current GPU. Maximum size of texture: " + maxTexSize);                
+            if( imagesNumber > maxTexturesNumber ) {
+                throw Error("Number of slicemaps bigger then number of available texture units. Available texture units: " + maxTexturesNumber);
+            };
 
-            } else {
-                me._core.setSlicemapsImages(images, imagesPaths);
-                me._needRedraw = true;
-            }
+            if( (Math.max(firstImage.width, firstImage.height) > maxTexSize) || (imagesNumber > maxTexturesNumber) ) {
+                throw Error("Size of slice bigger than maximum possible on current GPU. Maximum size of texture: " + maxTexSize);
+            };
+
+            me._core.setSlicemapsImages(images, imagesPaths);
+            me._needRedraw = true;
 
         };
 
@@ -156,8 +157,14 @@
         };
 
         me.setSteps = function(steps_number) {
-            me._core.setSteps(steps_number);
-            me._needRedraw = true;
+            if( steps_number <= me._core.getMaxStepsNumber() ) {
+                me._core.setSteps(steps_number);
+                me._needRedraw = true;
+
+            } else {
+                throw Error("Number of steps should be lower of equal length of min volume dimension.");
+
+            }
 
         };
 
@@ -191,16 +198,25 @@
 
         };
 
+        me.setVolumeSize = function(width, height, depth) {
+            me._core.setVolumeSize(width, height, depth);
+            me._needRedraw = true;
+            
+        };
+
         me.setGeometryMinX = function(value) {
             if(value > 1.0 || value < 0.0) {
                 throw Error("Geometry size  should be in range [0.0 - 1.0] !");
             }
 
-            if(value > me._core.getGeometryDimension()["xmax"]) {
+            if(value > me._core.getGeometryDimensions()["xmax"]) {
                 throw Error("Min X should be lower than max X!");
             }
 
-            me._core.setGeometryDimension("xmin", value);
+            var geometryDimension = me._core.getGeometryDimensions();
+            geometryDimension["xmin"] = value;
+
+            me._core.setGeometryDimensions(geometryDimension);
             me._needRedraw = true;
 
 
@@ -211,11 +227,14 @@
                 throw Error("Geometry size  should be in range [0.0 - 1.0] !");
             }
 
-            if(value < me._core.getGeometryDimension()["xmin"]) {
+            if(value < me._core.getGeometryDimensions()["xmin"]) {
                 throw Error("Max X should be bigger than min X!");
             }
 
-            me._core.setGeometryDimension("xmax", value);
+            var geometryDimension = me._core.getGeometryDimensions();
+            geometryDimension["xmax"] = value;
+
+            me._core.setGeometryDimensions(geometryDimension);
             me._needRedraw = true;
 
 
@@ -226,11 +245,14 @@
                 throw Error("Geometry size  should be in range [0.0 - 1.0] !");
             }
 
-            if(value > me._core.getGeometryDimension()["ymax"]) {
+            if(value > me._core.getGeometryDimensions()["ymax"]) {
                 throw Error("Min Y should be lower than max Y!");
             }
 
-            me._core.setGeometryDimension("ymin", value);
+            var geometryDimension = me._core.getGeometryDimensions();
+            geometryDimension["ymin"] = value;
+
+            me._core.setGeometryDimensions(geometryDimension);
             me._needRedraw = true;
 
         };
@@ -240,14 +262,16 @@
                 throw Error("Geometry size  should be in range [0.0 - 1.0] !");
             }
 
-            if(value < me._core.getGeometryDimension()["ymin"]) {
+            if(value < me._core.getGeometryDimensions()["ymin"]) {
                 throw Error("Max Y should be bigger than min Y!");
 
             }
 
-            me._core.setGeometryDimension("ymax", value);
-            me._needRedraw = true;
+            var geometryDimension = me._core.getGeometryDimensions();
+            geometryDimension["ymax"] = value;
 
+            me._core.setGeometryDimensions(geometryDimension);
+            me._needRedraw = true;
         };
 
         me.setGeometryMinZ = function(value) {
@@ -255,13 +279,15 @@
                 throw Error("Geometry size  should be in range [0.0 - 1.0] !");
             }
 
-            if(value > me._core.getGeometryDimension()["zmax"]) {
+            if(value > me._core.getGeometryDimensions()["zmax"]) {
                 throw Error("Min Z should be lower than max Z!");
             }
 
-            me._core.setGeometryDimension("zmin", value);
-            me._needRedraw = true;
+            var geometryDimension = me._core.getGeometryDimensions();
+            geometryDimension["zmin"] = value;
 
+            me._core.setGeometryDimensions(geometryDimension);
+            me._needRedraw = true;
         };
 
         me.setGeometryMaxZ = function(value) {
@@ -269,24 +295,26 @@
                 throw Error("Geometry size  should be in range [0.0 - 1.0] !");
             }
 
-            if(value < me._core.getGeometryDimension()["zmin"]) {
+            if(value < me._core.getGeometryDimensions()["zmin"]) {
                 throw Error("Max Z should be bigger than min Z!");
             }
 
-            me._core.setGeometryDimension("zmax", value);
-            me._needRedraw = true;
+            var geometryDimension = me._core.getGeometryDimensions();
+            geometryDimension["zmax"] = value;
 
+            me._core.setGeometryDimensions(geometryDimension);
+            me._needRedraw = true;
         };
 
-        me.setRendererSize = function(width, height) {
-            var ctx = me._core._renderer.getContext()
+        me.setRenderSize = function(width, height) {
+            var ctx = me._core._render.getContext()
             var maxRenderbufferSize = ctx.getParameter(ctx.MAX_RENDERBUFFER_SIZE);
             if(Math.max(width, height) > maxRenderbufferSize) {
                 console.warn("Size of canvas setted in " + maxRenderbufferSize + "x" + maxRenderbufferSize + ". Max render buffer size is " + maxRenderbufferSize + ".");
-                me._core.setRendererSize(maxRenderbufferSize, maxRenderbufferSize);
+                me._core.setRenderSize(maxRenderbufferSize, maxRenderbufferSize);
 
             } else {
-                me._core.setRendererSize(width, height);
+                me._core.setRenderSize(width, height);
 
             }
 
@@ -294,14 +322,14 @@
 
         };
 
-        me.setRendererCanvasSize = function(width, height) {
-            me._core.setRendererCanvasSize(width, height);
+        me.setRenderCanvasSize = function(width, height) {
+            me._core.setRenderCanvasSize(width, height);
             me._needRedraw = true;
 
         };
 
-        me.setBackgoundColor = function(color) {
-            me._core.setBackgoundColor(color);
+        me.setBackgroundColor = function(color) {
+            me._core.setBackgroundColor(color);
             me._needRedraw = true;
 
         };
@@ -336,6 +364,12 @@
             }
 
             me._core.setGrayMaxValue(value);
+            me._needRedraw = true;
+
+        };
+
+        me.applyThresholding = function(threshold_name) {
+            me._core.applyThresholding( threshold_name );
             me._needRedraw = true;
 
         };
@@ -460,8 +494,32 @@
             return [me._core.getGrayMinValue(), me._core.getGrayMaxValue()]
         };
 
-        me.getGeometryDimension = function() {
-            return me._core.getGeometryDimension();
+        me.getGeometryDimensions = function() {
+            return me._core.getGeometryDimensions();
+        };
+
+        me.getVolumeSize = function() {
+            return me._core.getVolumeSize();
+        };
+
+        me.getVolumeSizeNormalized = function() {
+            return me._core.getVolumeSizeNormalized();
+        };
+
+        me.getMaxStepsNumber = function() {
+            return me._core.getMaxStepsNumber();
+        };
+
+        me.getMaxTextureSize = function() {
+            return me._core.getMaxTextureSize();
+        };
+
+        me.getMaxTexturesNumber = function() {
+            return me._core.getMaxTexturesNumber();
+        };
+
+        me.getMaxFramebuferSize = function() {
+            return me._core.getMaxFramebuferSize();
         };
 
         me.getOpacityFactor = function() {
@@ -472,8 +530,8 @@
             return me._core.getColorFactor();
         };
 
-        me.getBackgound = function() {
-            return me._core.getBackgound();
+        me.getBackground = function() {
+            return me._core.getBackground();
         };
 
         me.getAbsorptionMode = function() {
@@ -488,14 +546,13 @@
             return me._core.getRenderSizeInPixels();
         };
 
-        me.getCanvasSize = function() {
+        me.getRenderCanvasSize = function() {
             return me._core.getCanvasSize();
         };
 
-        me.getCanvasSizeInPixels = function() {
+        me.getRenderCavnvasSizeInPixels  = function() {
             return me._core.getCanvasSizeInPixels();
         };
-
 
         me.getAbsorptionMode = function() {
             return me._core.getAbsorptionMode();
@@ -586,28 +643,36 @@
                 me._core.setGrayMaxValue( config['gray_max'] );
             }
 
+            if(config['threshold_indexes'] != undefined) {
+                me._core.setThresholdIndexes( config['threshold_indexes']["otsu"], config['threshold_indexes']["isodata"], config['threshold_indexes']["yen"], config['threshold_indexes']["li"] );
+            }
+
+            if(config['volume_size'] != undefined) {
+                me.setVolumeSize( config['volume_size'][0], config['volume_size'][1], config['volume_size'][2] );
+            }
+
             if(config['x_min'] != undefined) {
-                me._core.setGeometryDimension( "xmin", config['x_min'] );
+                me.setGeometryMinX( config['x_min'] );
             }
 
             if(config['x_max'] != undefined) {
-                me._core.setGeometryDimension( "xmax", config['x_max'] );
+                me.setGeometryMaxX( config['x_max'] );
             }
 
             if(config['y_min'] != undefined) {
-                me._core.setGeometryDimension( "ymin", config['y_min'] );
+                me.setGeometryMinY( config['y_min'] );
             }
 
             if(config['y_max'] != undefined) {
-                me._core.setGeometryDimension( "ymax", config['y_max'] );
+                me.setGeometryMaxY( config['y_max'] );
             }
 
             if(config['z_min'] != undefined) {
-                me._core.setGeometryDimension( "zmin", config['z_min'] );
+                me.setGeometryMinZ( config['z_min'] );
             }
 
             if(config['z_max'] != undefined) {
-                me._core.setGeometryDimension( "zmax", config['z_max'] );
+                me.setGeometryMaxZ( config['z_max'] );
             }
 
             if(config['opacity_factor'] != undefined) {
@@ -622,8 +687,8 @@
                 me._core.setTransferFunctionByColors( config['tf_colors'] );   
             }
             
-            if(config['backgound'] != undefined) {
-                me._core.setBackgoundColor( config['backgound'] );
+            if(config['background'] != undefined) {
+                me._core.setBackgroundColor( config['background'] );
             }
 
             if(config['auto_steps'] != undefined) {
@@ -634,12 +699,12 @@
                 me._core.setAbsorptionMode( config['absorption_mode'] );
             }
 
-            if(config['renderer_size'] != undefined) {
-                me.setRendererSize( config['renderer_size'][0], config['renderer_size'][1] );
+            if(config['render_size'] != undefined) {
+                me.setRenderSize( config['render_size'][0], config['render_size'][1] );
             }
 
-            if(config['renderer_canvas_size'] != undefined) {
-                me.setRendererCanvasSize( config['renderer_canvas_size'][0], config['renderer_canvas_size'][1] );
+            if(config['render_canvas_size'] != undefined) {
+                me.setRenderCanvasSize( config['render_canvas_size'][0], config['render_canvas_size'][1] );
             }
 
             me._needRedraw = true;
@@ -658,16 +723,17 @@
 
             xmlhttp.onreadystatechange = function() {
                 if (xmlhttp.readyState == XMLHttpRequest.DONE ) {
-                   if(xmlhttp.status == 200){
-                      onLoad(JSON.parse(xmlhttp.responseText));
-                   }
-                   else if(xmlhttp.status == 400) {
-                      userOnError(xmlhttp);
-                   }
-                   else {
-                        userOnError(xmlhttp);
-                   }
+                    if(xmlhttp.status == 200){
+                        var config = JSON.parse(xmlhttp.responseText);
+                        me.setConfig( config );
+                        if(onLoad != undefined) onLoad();
+                    } else if(xmlhttp.status == 400) {
+                        if(userOnError != undefined) userOnError(xmlhttp);
+                    } else {
+                        if(userOnError != undefined) userOnError(xmlhttp);
+                    }
                 }
+
             }
 
             xmlhttp.open("GET", path, true);
@@ -679,6 +745,7 @@
             var config = {
                 "steps": me.getSteps(),
                 "slices_range": me.getSlicesRange(),
+                "volume_size": me.getVolumeSize(),
                 "row_col": me.getRowCol(),
                 "gray_min": me.getGrayMinValue(),
                 "gray_max": me.getGrayMaxValue(),
@@ -686,19 +753,19 @@
                 "opacity_factor": me.getOpacityFactor(),
                 "color_factor": me.getColorFactor(),
                 "absorption_mode": me.getAbsorptionMode(),
-                "renderer_size": me.getRenderSize(),
-                "renderer_canvas_size": me.getCanvasSize(),
+                "render_size": me.getRenderSize(),
+                "render_canvas_size": me.getRenderCanvasSize(),
                 "backgound": me.getClearColor(),
                 "tf_path": me.getTransferFunctionAsImage().src,
                 "tf_colors": me.getTransferFunctionColors(),
-                "x_min": me.getGeometryDimension()["xmin"],
-                "x_max": me.getGeometryDimension()["xmax"],
-                "y_min": me.getGeometryDimension()["ymin"],
-                "y_max": me.getGeometryDimension()["ymax"],
-                "z_min": me.getGeometryDimension()["zmin"], 
-                "z_max": me.getGeometryDimension()["zmax"],
+                "x_min": me.getGeometryDimensions()["xmin"],
+                "x_max": me.getGeometryDimensions()["xmax"],
+                "y_min": me.getGeometryDimensions()["ymin"],
+                "y_max": me.getGeometryDimensions()["ymax"],
+                "z_min": me.getGeometryDimensions()["zmin"], 
+                "z_max": me.getGeometryDimensions()["zmax"],
                 "dom_container_id": me.getDomContainerId(),
-                "auto_steps": me.isAutoStepsOn(),
+                "auto_steps": me.isAutoStepsOn()
             };
 
             return config;

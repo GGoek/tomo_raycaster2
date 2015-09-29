@@ -5,8 +5,6 @@
  * @class Core
  * @this {Core}
  * @author sogimu@nxt.ru Aleksandr Lizin aka sogimu
- * @version 0.1
- *
  */
 
 (function(namespace) {
@@ -14,79 +12,139 @@
 
         var me = {};
 
-        me.createBoxGeometry = function(dimension) {
-            var vertexPos = [
+        me.createBoxGeometry = function(geometryDimension, volumeSize) {
+            var vertexPositions = [
                 //front face first
-                [dimension.xmin, dimension.ymin, dimension.zmax],
-                [dimension.xmax, dimension.ymin, dimension.zmax],
-                [dimension.xmax, dimension.ymax, dimension.zmax],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
                 //front face second
-                [dimension.xmin, dimension.ymin, dimension.zmax],
-                [dimension.xmax, dimension.ymax, dimension.zmax],
-                [dimension.xmin, dimension.ymax, dimension.zmax],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
 
                 // back face first
-                [dimension.xmin, dimension.ymin, dimension.zmin],
-                [dimension.xmin, dimension.ymax, dimension.zmin],
-                [dimension.xmax, dimension.ymax, dimension.zmin],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
                 // back face second
-                [dimension.xmin, dimension.ymin, dimension.zmin],
-                [dimension.xmax, dimension.ymax, dimension.zmin],
-                [dimension.xmax, dimension.ymin, dimension.zmin],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
 
                 // top face first
-                [dimension.xmin, dimension.ymax, dimension.zmin],
-                [dimension.xmin, dimension.ymax, dimension.zmax],
-                [dimension.xmax, dimension.ymax, dimension.zmax],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
                 // top face second
-                [dimension.xmin, dimension.ymax, dimension.zmin],
-                [dimension.xmax, dimension.ymax, dimension.zmax],
-                [dimension.xmax, dimension.ymax, dimension.zmin],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
 
                 // bottom face first
-                [dimension.xmin, dimension.ymin, dimension.zmin],
-                [dimension.xmax, dimension.ymin, dimension.zmin],
-                [dimension.xmax, dimension.ymin, dimension.zmax],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
                 // bottom face second
-                [dimension.xmin, dimension.ymin, dimension.zmin],
-                [dimension.xmax, dimension.ymin, dimension.zmax],
-                [dimension.xmin, dimension.ymin, dimension.zmax],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
 
                 // right face first
-                [dimension.xmax, dimension.ymin, dimension.zmin],
-                [dimension.xmax, dimension.ymax, dimension.zmin],
-                [dimension.xmax, dimension.ymax, dimension.zmax],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
                 // right face second
-                [dimension.xmax, dimension.ymin, dimension.zmin],
-                [dimension.xmax, dimension.ymax, dimension.zmax],
-                [dimension.xmax, dimension.ymin, dimension.zmax],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
+                [geometryDimension.xmax * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
 
                 // left face first
-                [dimension.xmin, dimension.ymin, dimension.zmin],
-                [dimension.xmin, dimension.ymin, dimension.zmax],
-                [dimension.xmin, dimension.ymax, dimension.zmax],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
                 // left face second
-                [dimension.xmin, dimension.ymin, dimension.zmin],
-                [dimension.xmin, dimension.ymax, dimension.zmax],
-                [dimension.xmin, dimension.ymax, dimension.zmin]
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymin * volumeSize[1], geometryDimension.zmin * volumeSize[2]],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmax * volumeSize[2]],
+                [geometryDimension.xmin * volumeSize[0], geometryDimension.ymax * volumeSize[1], geometryDimension.zmin * volumeSize[2]]
+            ];
+
+            var vertexColors = [
+                //front face first
+                [geometryDimension.xmin, geometryDimension.ymin, geometryDimension.zmax],
+                [geometryDimension.xmax, geometryDimension.ymin, geometryDimension.zmax],
+                [geometryDimension.xmax, geometryDimension.ymax, geometryDimension.zmax],
+                //front face second
+                [geometryDimension.xmin, geometryDimension.ymin, geometryDimension.zmax],
+                [geometryDimension.xmax, geometryDimension.ymax, geometryDimension.zmax],
+                [geometryDimension.xmin, geometryDimension.ymax, geometryDimension.zmax],
+
+                // back face first
+                [geometryDimension.xmin, geometryDimension.ymin, geometryDimension.zmin],
+                [geometryDimension.xmin, geometryDimension.ymax, geometryDimension.zmin],
+                [geometryDimension.xmax, geometryDimension.ymax, geometryDimension.zmin],
+                // back face second
+                [geometryDimension.xmin, geometryDimension.ymin, geometryDimension.zmin],
+                [geometryDimension.xmax, geometryDimension.ymax, geometryDimension.zmin],
+                [geometryDimension.xmax, geometryDimension.ymin, geometryDimension.zmin],
+
+                // top face first
+                [geometryDimension.xmin, geometryDimension.ymax, geometryDimension.zmin],
+                [geometryDimension.xmin, geometryDimension.ymax, geometryDimension.zmax],
+                [geometryDimension.xmax, geometryDimension.ymax, geometryDimension.zmax],
+                // top face second
+                [geometryDimension.xmin, geometryDimension.ymax, geometryDimension.zmin],
+                [geometryDimension.xmax, geometryDimension.ymax, geometryDimension.zmax],
+                [geometryDimension.xmax, geometryDimension.ymax, geometryDimension.zmin],
+
+                // bottom face first
+                [geometryDimension.xmin, geometryDimension.ymin, geometryDimension.zmin],
+                [geometryDimension.xmax, geometryDimension.ymin, geometryDimension.zmin],
+                [geometryDimension.xmax, geometryDimension.ymin, geometryDimension.zmax],
+                // bottom face second
+                [geometryDimension.xmin, geometryDimension.ymin, geometryDimension.zmin],
+                [geometryDimension.xmax, geometryDimension.ymin, geometryDimension.zmax],
+                [geometryDimension.xmin, geometryDimension.ymin, geometryDimension.zmax],
+
+                // right face first
+                [geometryDimension.xmax, geometryDimension.ymin, geometryDimension.zmin],
+                [geometryDimension.xmax, geometryDimension.ymax, geometryDimension.zmin],
+                [geometryDimension.xmax, geometryDimension.ymax, geometryDimension.zmax],
+                // right face second
+                [geometryDimension.xmax, geometryDimension.ymin, geometryDimension.zmin],
+                [geometryDimension.xmax, geometryDimension.ymax, geometryDimension.zmax],
+                [geometryDimension.xmax, geometryDimension.ymin, geometryDimension.zmax],
+
+                // left face first
+                [geometryDimension.xmin, geometryDimension.ymin, geometryDimension.zmin],
+                [geometryDimension.xmin, geometryDimension.ymin, geometryDimension.zmax],
+                [geometryDimension.xmin, geometryDimension.ymax, geometryDimension.zmax],
+                // left face second
+                [geometryDimension.xmin, geometryDimension.ymin, geometryDimension.zmin],
+                [geometryDimension.xmin, geometryDimension.ymax, geometryDimension.zmax],
+                [geometryDimension.xmin, geometryDimension.ymax, geometryDimension.zmin]
             ];
 
             var positions = [];
             var colors = [];
 
-            for(var i = 0; i < vertexPos.length; i++) {
-                var backCounter = vertexPos.length - 1 - i,
-                    x = vertexPos[backCounter][0],
-                    y = vertexPos[backCounter][1],
-                    z = vertexPos[backCounter][2];
+            for(var i = 0; i < vertexPositions.length; i++) {
+                var backCounter = vertexPositions.length - 1 - i;
+                var x = vertexPositions[backCounter][0];
+                var y = vertexPositions[backCounter][1];
+                var z = vertexPositions[backCounter][2];
+
+                var r = vertexColors[backCounter][0];
+                var g = vertexColors[backCounter][1];
+                var b = vertexColors[backCounter][2];
 
                 positions.push(x);
                 positions.push(y);
-                positions.push(z);// * volumeDimension.getZStretchFactor());
+                positions.push(z);
 
-                colors.push(x);
-                colors.push(y);
-                colors.push(z);
+                colors.push(r);
+                colors.push(g);
+                colors.push(b);
                 colors.push(1.0);
             }
 
@@ -98,9 +156,12 @@
 
             return geometry;
         }
+
         return me;
         
-    }
+    };
+
+
 
     namespace.GeometryHelper = GeometryHelper;
 

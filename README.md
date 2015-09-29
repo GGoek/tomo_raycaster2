@@ -1,12 +1,17 @@
 JavaScrip framework for client side raycasting.
 ====================
 
-##Possablites
+[![Join the chat at https://gitter.im/kit-ipe/tomo_raycaster2](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/kit-ipe/tomo_raycaster2?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+##Possibilities
 - Three graphics mods: x-ray, MIPS, Maximum intensity projection
 - Thresholding by intensity of grayscale value
+- Transfer function applying after thresholding only
+- Cross-browser (Chrome, Chromium, Firefox, Safari, Seamonkey, Safary mobile version, Chrome mobile version)
+- Cross-browser
 - Adoptive steps changing for getting good performance
 - Configurability
-- Utility for creating sitemaps
+- Methods getConfig() and setConfig() for ability save or recover state of work
 
 ##Example of usage:
 
@@ -21,7 +26,7 @@ vrc = new VRC.VolumeRaycaster({
 	"gray_max": 1.0,
 	"row_col": [16, 16],
 	"steps": 1024,
-	"resolution": [700, 700],
+	"render_size": [700, 700],
 	"absorption_mode": 1,
 });
 
@@ -63,22 +68,31 @@ $ sudo zypper in npm
 ```bash
 $ sudo pacman -S npm
 ```
-### 4. Install plugins for Grunt
+### 4. Prepare Grunt
 ```bash
-$ ./install.sh
+$ ./prepare_grunt.sh
 ```
-### 5. Generate minification version of tomo_raycaster2
+### 5. Open additional console
+### 6. Start auto concatination and minification of js and glsl source code if changes appears
 ```bash
-$ grunt
+$ grunt watch
 ```
-### 6. Start python http server
+### 6. Go to the test dir
 ```bash
-$ ./start_server.sh
+$ cd test
+```
+### 7. Upload js library dependencies withhelp of bower
+```bash
+$ ./upload_dependencies.sh
+```
+### 8. Start python http server
+```bash
+$ ./start_http_server.sh
 
 ```
-### 7. Point your browser to [localhost:10001](http://localhost:10001/examples).
+### 9. Point your browser to [localhost:10001](http://localhost:10001).
 
-### 8. See more examples of usage [here](https://github.com/kit-ipe/tomo_raycaster2_examples.git)
+### 10. Change files into dir src/*. Save it. Change code of test app in test/*. Save it. Refresh page localhost:10001 to see changes
 
 ## LICENSE
 
