@@ -2,9 +2,8 @@ guiControls = new function() {
 	this.gray_min = -1;
 	this.gray_max = -1;
 	this.steps = -1;
-	this.number_slices = -1;
 	this.render_size = 8;
-	this.render_canvas_size = 7;
+	this.render_canvas_size = 6;
 	this.row_col = -1 + "x" + -1;
 	this.absorption_mode = -1;
 	this.opacity_factor = -1;
@@ -22,7 +21,6 @@ guiControls = new function() {
 };
 
 var UpdateGUI = function(config) {
-	guiControls.number_slices = config["slices_range"][1];
 	guiControls.gray_min = config["gray_min"];
 	guiControls.gray_max = config["gray_max"];
 	guiControls.row_col = config["row_col"][0] + "x" + config["row_col"][1];
@@ -78,11 +76,6 @@ var InitGUI = function(config, rcl2) {
 	steps_controller = gui.add(guiControls, 'steps', 10, rcl2.getMaxStepsNumber(), 1).listen();
 	steps_controller.onFinishChange(function(value) {
 		rcl2.setSteps(value);
-	});
-
-	var number_slices_controller = gui.add(guiControls, 'number_slices', 1, 2048, 1).listen();
-	number_slices_controller.onFinishChange(function(value) {
-		rcl2.setSlicesRange(0, value);
 	});
 
 	var auto_steps_controller = gui.add(guiControls, 'auto_steps').listen();
